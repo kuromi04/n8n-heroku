@@ -112,8 +112,10 @@ activate_runtime_dir() {
 install_n8n_runtime() {
   local version
   local force
+  local previous_version
   version="$1"
   force="${2:-false}"
+  previous_version="${3:-}"
 
   case "$force" in
     true|TRUE)
@@ -123,6 +125,14 @@ install_n8n_runtime() {
       force=false
       ;;
   esac
+
+  if [ "$force" = "true" ]; then
+    log "Clearing runtime directory ${N8N_RUNTIME_DIR} before reinstalling n8n ${version}."
+    rm -rf "$N8N_RUNTIME_DIR"
+  elif [ -n "$previous_version" ] && [ "$previous_version" != "$version" ]; then
+    log "Removing previously installed n8n ${previous_version} before upgrading to ${version}."
+    rm -rf "${N8N_RUNTIME_DIR}/lib/node_modules/n8n" "${N8N_RUNTIME_DIR}/bin/n8n"
+  fi
 
   mkdir -p "$N8N_RUNTIME_DIR"
   if ! command -v npm >/dev/null 2>&1; then
@@ -139,7 +149,13 @@ install_n8n_runtime() {
 
   if npm install "${install_args[@]}" "n8n@${version}"; then
     activate_runtime_dir
-    log "Successfully installed n8n ${version}."
+    local resolved
+    resolved="$(runtime_n8n_version)"
+    if [ "$resolved" != "$version" ]; then
+      log "Warning: expected n8n ${version} after installation but detected ${resolved:-unknown}."
+    else
+      log "Successfully installed n8n ${version}."
+    fi
     return 0
   fi
 
@@ -194,7 +210,7 @@ maybe_update_n8n() {
     return
   fi
 
-  if install_n8n_runtime "$target_version" "$force_install"; then
+  if install_n8n_runtime "$target_version" "$force_install" "$installed_version"; then
     if [ "$force_install" = "true" ]; then
       log "Forced installation completed; unset N8N_FORCE_INSTALL to avoid reinstalling on every boot."
       export N8N_FORCE_INSTALL=false
