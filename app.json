@@ -41,7 +41,7 @@
       "value": "/tmp/n8n-runtime"
     },
     "N8N_FORCE_INSTALL": {
-      "description": "Temporarily set to 'true' to reinstall the requested n8n version from scratch on the next deploy without touching other settings.",
+      "description": "Temporarily set to 'true' to reinstall the requested n8n version from scratch on the next deploy without touching other settings. npm's cache will be cleared automatically to fetch the newest build.",
       "value": "false"
     }
   },

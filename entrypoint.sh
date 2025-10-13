@@ -140,6 +140,11 @@ install_n8n_runtime() {
     return 1
   fi
 
+  if [ "$force" = "true" ]; then
+    log "Clearing npm cache before the forced installation."
+    npm cache clean --force >/dev/null 2>&1 || true
+  fi
+
   log "Installing n8n ${version} into ${N8N_RUNTIME_DIR}."
   local install_args
   install_args=(--global --loglevel=error --no-fund --unsafe-perm --prefix "$N8N_RUNTIME_DIR")

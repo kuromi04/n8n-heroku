@@ -20,7 +20,7 @@ This container keeps the n8n CLI up to date without requiring code changes:
 
 - Set the `N8N_VERSION` config var to pin a specific n8n release. The default value (`latest`) resolves to the newest stable version on each deploy or dyno restart.
 - Automatic upgrades can be disabled by setting `N8N_AUTO_UPDATE=false` if you prefer to manage updates manually.
-- To force an upgrade of the currently requested version (for example after a new `latest` is published), set `N8N_FORCE_INSTALL=true` or use the **Actualizar n8n** button above and select your existing application in the Heroku dialog. The flag will trigger a clean reinstall on the next deploy without touching other configuration.
+- To force an upgrade of the currently requested version (for example after a new `latest` is published), set `N8N_FORCE_INSTALL=true` or use the **Actualizar n8n** button above and select your existing application in the Heroku dialog. The flag will trigger a clean reinstall on the next deploy without touching other configuration and clears npm's cache to make sure the newest build is fetched.
 
 During startup the entrypoint script compares the installed version with the desired one and installs upgrades when required, ensuring that only n8n itself changes while the rest of the environment remains stable.
 
