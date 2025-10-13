@@ -11,7 +11,8 @@ USER root
 COPY entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
 ENV N8N_RUNTIME_DIR=/tmp/n8n-runtime
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 CMD ["n8n", "start"]
