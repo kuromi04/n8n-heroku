@@ -8,6 +8,6 @@ build:
 release:
   image: web
   command:
-    - ./entrypoint.sh n8n migrate:database
+    - n8n migrate:database
 run:
   web: n8n start

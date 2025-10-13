@@ -26,4 +26,4 @@ During startup the entrypoint script compares the installed version with the des
 
 Updated releases are placed in a writable runtime directory (default `/tmp/n8n-runtime`) and prepended to the `PATH`, so the Heroku slug remains untouched. The runtime installer automatically clears any previously staged binaries before installing the requested version. You can change the directory by defining the optional `N8N_RUNTIME_DIR` config var as long as the location is writable at boot time.
 
-Both the release phase and the running dynos now bootstrap through the same entrypoint, guaranteeing that each deploy checks for newer n8n versions and runs database migrations with the fresh CLI before traffic reaches the instance.
+Tanto la fase de *release* como los *dynos* web reutilizan el mismo entrypoint del contenedor, por lo que cada despliegue verifica si hay una versión más reciente de n8n, la instala antes de ejecutar las migraciones de base de datos y sólo entonces expone la aplicación.
