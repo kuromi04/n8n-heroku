@@ -39,6 +39,10 @@
     "N8N_RUNTIME_DIR": {
       "description": "Optional writable directory for storing on-boot n8n upgrades. Defaults to /tmp/n8n-runtime.",
       "value": "/tmp/n8n-runtime"
+    },
+    "N8N_FORCE_INSTALL": {
+      "description": "Temporarily set to 'true' to reinstall the requested n8n version on the next deploy without touching other settings.",
+      "value": "false"
     }
   },
   "addons": [

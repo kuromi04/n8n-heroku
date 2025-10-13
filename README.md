@@ -1,6 +1,7 @@
 # n8n-heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https://github.com/kuromi04/n8n-heroku2025.git)
+[![Actualizar n8n](https://img.shields.io/badge/Actualizar%20n8n-Deploy%20Update-79589f?logo=heroku&logoColor=white)](https://dashboard.heroku.com/new?template=https://github.com/kuromi04/n8n-heroku2025.git&env[N8N_FORCE_INSTALL]=true)
 
 ## n8n - Free and open fair-code licensed node based Workflow Automation Tool.
 
@@ -19,7 +20,10 @@ This container keeps the n8n CLI up to date without requiring code changes:
 
 - Set the `N8N_VERSION` config var to pin a specific n8n release. The default value (`latest`) resolves to the newest stable version on each deploy or dyno restart.
 - Automatic upgrades can be disabled by setting `N8N_AUTO_UPDATE=false` if you prefer to manage updates manually.
+- To force an upgrade of the currently requested version (for example after a new `latest` is published), set `N8N_FORCE_INSTALL=true` or use the **Actualizar n8n** button above and select your existing application in the Heroku dialog. The flag will trigger a reinstall on the next deploy without touching other configuration.
 
 During startup the entrypoint script compares the installed version with the desired one and installs upgrades when required, ensuring that only n8n itself changes while the rest of the environment remains stable.
 
 Updated releases are placed in a writable runtime directory (default `/tmp/n8n-runtime`) and prepended to the `PATH`, so the Heroku slug remains untouched. You can change the directory by defining the optional `N8N_RUNTIME_DIR` config var as long as the location is writable at boot time.
+
+Both the release phase and the running dynos now bootstrap through the same entrypoint, guaranteeing that each deploy checks for newer n8n versions and runs database migrations with the fresh CLI before traffic reaches the instance.

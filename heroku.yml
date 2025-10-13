@@ -7,6 +7,6 @@ build:
     web: Dockerfile
 release:
   command:
-    - n8n migrate:database
+    - ./entrypoint.sh n8n migrate:database
 run:
   web: n8n start

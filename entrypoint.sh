@@ -10,6 +10,17 @@ log() {
   printf '[%s] %s\n' "$timestamp" "$*"
 }
 
+normalize_bool() {
+  case "${1:-}" in
+    1|true|TRUE|yes|YES|on|ON)
+      printf 'true'
+      ;;
+    *)
+      printf 'false'
+      ;;
+  esac
+}
+
 configure_port() {
   if [ -n "${PORT:-}" ]; then
     export N8N_PORT="$PORT"
@@ -100,7 +111,18 @@ activate_runtime_dir() {
 
 install_n8n_runtime() {
   local version
+  local force
   version="$1"
+  force="${2:-false}"
+
+  case "$force" in
+    true|TRUE)
+      force=true
+      ;;
+    *)
+      force=false
+      ;;
+  esac
 
   mkdir -p "$N8N_RUNTIME_DIR"
   if ! command -v npm >/dev/null 2>&1; then
@@ -109,7 +131,13 @@ install_n8n_runtime() {
   fi
 
   log "Installing n8n ${version} into ${N8N_RUNTIME_DIR}."
-  if npm install --global --loglevel=error --no-fund --unsafe-perm --prefix "$N8N_RUNTIME_DIR" "n8n@${version}"; then
+  local install_args
+  install_args=(--global --loglevel=error --no-fund --unsafe-perm --prefix "$N8N_RUNTIME_DIR")
+  if [ "$force" = "true" ]; then
+    install_args+=(--force)
+  fi
+
+  if npm install "${install_args[@]}" "n8n@${version}"; then
     activate_runtime_dir
     log "Successfully installed n8n ${version}."
     return 0
@@ -130,6 +158,11 @@ runtime_n8n_version() {
 maybe_update_n8n() {
   local auto_update
   auto_update="${N8N_AUTO_UPDATE:-true}"
+  local force_install
+  force_install="${N8N_FORCE_INSTALL:-false}"
+
+  auto_update="$(normalize_bool "$auto_update")"
+  force_install="$(normalize_bool "$force_install")"
 
   mkdir -p "$N8N_RUNTIME_DIR"
   activate_runtime_dir
@@ -147,17 +180,25 @@ maybe_update_n8n() {
     installed_version="$(current_n8n_version)"
   fi
 
-  if [ "$installed_version" = "$target_version" ]; then
+  if [ "$installed_version" = "$target_version" ] && [ "$force_install" != "true" ]; then
     log "n8n ${installed_version} is already available."
     return
   fi
 
-  if [ "$auto_update" != "true" ]; then
+  if [ "$installed_version" = "$target_version" ] && [ "$force_install" = "true" ]; then
+    log "Reinstalling n8n ${target_version} because N8N_FORCE_INSTALL=true."
+  fi
+
+  if [ "$auto_update" != "true" ] && [ "$force_install" != "true" ]; then
     log "n8n ${installed_version:-unknown} does not match desired ${target_version}, but automatic updates are disabled."
     return
   fi
 
-  if install_n8n_runtime "$target_version"; then
+  if install_n8n_runtime "$target_version" "$force_install"; then
+    if [ "$force_install" = "true" ]; then
+      log "Forced installation completed; unset N8N_FORCE_INSTALL to avoid reinstalling on every boot."
+      export N8N_FORCE_INSTALL=false
+    fi
     return
   fi
 
