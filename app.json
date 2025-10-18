@@ -1,15 +1,25 @@
 {
   "name": "n8n on Heroku",
-  "description": "n8n en Heroku con 1-click deploy",
+  "description": "Instala n8n en Heroku con despliegue 1-click y actualizaciones simples",
   "stack": "container",
   "env": {
-    "N8N_ENCRYPTION_KEY": { "required": true, "description": "cadena aleatoria segura" },
     "N8N_BASIC_AUTH_ACTIVE": { "value": "true" },
-    "N8N_BASIC_AUTH_USER": { "required": true },
-    "N8N_BASIC_AUTH_PASSWORD": { "required": true },
+    "N8N_BASIC_AUTH_USER": { "description": "Usuario para acceder a n8n", "value": "admin" },
+    "N8N_BASIC_AUTH_PASSWORD": { "description": "Contraseña para n8n", "value": "changeme" },
+    "N8N_ENCRYPTION_KEY": { "description": "Clave de cifrado segura", "value": "use-uuid-generator" },
     "N8N_PORT": { "value": "8080" }
   },
-  "addons": [{ "plan": "heroku-postgresql:mini" }],
-  "keywords": ["n8n","heroku","automation"]
+  "addons": [
+    { "plan": "heroku-postgresql:mini" }
+  ],
+  "build": {
+    "docker": {
+      "web": "Dockerfile"
+    }
+  },
+  "run": {
+    "web": "/entrypoint.sh"
+  },
+  "keywords": ["n8n", "heroku", "automation"]
 }
 
