@@ -1,15 +1,9 @@
-# syntax=docker/dockerfile:1
-
-ARG N8N_VERSION=latest
-FROM n8nio/n8n:${N8N_VERSION}
-
-# Run as root to allow runtime updates of the n8n CLI when requested.
-USER root
-
-# Replace the entrypoint with a Heroku-friendly bootstrap script that
-# prepares the database configuration and optionally keeps n8n updated.
-COPY entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["n8n", "start"]
+FROM n8nio/n8n:latest
+# Heroku asigna $PORT; n8n escucha en N8N_PORT
+ENV N8N_HOST=0.0.0.0
+ENV N8N_PORT=8080
+EXPOSE 8080
+# Heroku inyecta DATABASE_URL; n8n lo leerá si configuras envs abajo
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+CMD ["/entrypoint.sh"]
