@@ -1,12 +1,8 @@
 setup:
   addons:
-    - plan: heroku-postgresql
-      as: DATABASE
+    - plan: heroku-postgresql:mini
 build:
   docker:
     web: Dockerfile
-release:
-  command:
-    - n8n migrate:database
 run:
-  web: n8n start
+  web: /entrypoint.sh
