@@ -1,14 +1,15 @@
 {
   "name": "n8n on Heroku",
-  "description": "n8n autoservicio en Heroku con 1-click deploy",
+  "description": "n8n en Heroku con 1-click deploy",
   "stack": "container",
   "env": {
-    "N8N_ENCRYPTION_KEY": { "description": "Clave aleatoria segura", "required": true },
+    "N8N_ENCRYPTION_KEY": { "required": true, "description": "cadena aleatoria segura" },
     "N8N_BASIC_AUTH_ACTIVE": { "value": "true" },
     "N8N_BASIC_AUTH_USER": { "required": true },
     "N8N_BASIC_AUTH_PASSWORD": { "required": true },
     "N8N_PORT": { "value": "8080" }
   },
   "addons": [{ "plan": "heroku-postgresql:mini" }],
-  "keywords": ["n8n", "automation", "heroku"]
+  "keywords": ["n8n","heroku","automation"]
 }
+
